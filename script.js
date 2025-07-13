@@ -13,6 +13,9 @@ function Gameboard(){
     const getBoard=()=> board;
 
     const dropToken=(row, column,player)=>{
+        if (board[row][column].getValue() !== "") {
+            return false;
+        }
         board[row][column].addToken(player);
     }
 
@@ -70,10 +73,21 @@ function gameController(
 
     const playRound=(row,column)=>{
         console.log(`Dropping ${getActivePlayer().name}'s token in ${row} row, ${column} column`);
-        board.dropToken(row,column,getActivePlayer().token);
+        if(board.dropToken(row,column,getActivePlayer().token)==false){
+            console.log("Invalid move");
+            return;
+        }
 
         switchPlayerTurn();
         printNewRound();
+    }
+
+    const win=(board)=>{
+        for(let i=0;i<3;i++){
+            for(let j=0;j<3;j++){
+                if(board.dropToken(row,column,getActivePlayer().token)==)
+            }
+        }
     }
 
     printNewRound();
@@ -96,14 +110,14 @@ function screenController(){
         const board=game.getBoard();
         const activePlayer=game.getActivePlayer();
 
-        playerTurnDiv.textContent=`${activePlayer}'s Turn`;
+        playerTurnDiv.textContent=`${activePlayer.name}'s Turn`;
 
         board.forEach((row,indexRow)=>{
             row.forEach((cell,indexColumn)=>{
                 const cellButton=document.createElement("button");
                 cellButton.classList.add("cell");
 
-                cellButton.dataset.column=indexColumn;
+                cellButton.dataset.cell=indexColumn;
                 cellButton.dataset.row=indexRow;
                 cellButton.textContent=cell.getValue();
                 boardDiv.appendChild(cellButton);
@@ -113,7 +127,7 @@ function screenController(){
     }
 
     function click(e){
-        const selectedColumn=e.target.dataset.column;
+        const selectedColumn=e.target.dataset.cell;
         const selectedRow=e.target.dataset.row;
         if(!selectedColumn || !selectedRow) return;
         game.playRound(selectedRow,selectedColumn);
