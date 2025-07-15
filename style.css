@@ -1,3 +1,8 @@
+@font-face {
+    font-family:robo;
+    src: url(font/Roboto-Regular.woff);
+}
+
 .board{
     display: grid;
     width: 500px;
@@ -9,5 +14,19 @@
 
 .cell{
     border: 1px solid black;
+    font-size: 2rem;
 }
 
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-family: robo;
+    margin: 2rem;
+}
+
+.turn{
+    padding: 2rem;
+}

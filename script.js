@@ -22,9 +22,48 @@ function Gameboard(){
     const printBoard= () =>{
     const boardWithCellValues=board.map((row)=>row.map((cell)=>cell.getValue()));
     console.log(boardWithCellValues);
-}
+    }
 
-return{ getBoard, dropToken,printBoard};
+    const checkwin=()=>{
+        const boardValues=board.map((row)=>row.map((cell)=>cell.getValue()));
+        for(let i=0;i<3;i++){
+            if(
+            boardValues[i][0] &&
+            boardValues[i][0]===boardValues[i][1] &&
+            boardValues[i][1]===boardValues[i][2]){
+                return boardValues[i][0];
+            }
+        }
+
+        for(let i=0;i<3;i++){
+           if(
+            boardValues[0][i] &&
+            boardValues[0][i]===boardValues[1][i] &&
+            boardValues[1][i]===boardValues[2][i]){
+                return boardValues[0][i];
+            } 
+        }
+
+        if(
+            boardValues[0][0] &&
+            boardValues[0][0]=== boardValues[1][1] &&
+            boardValues[1][1]===boardValues[2][2]
+        ){
+            return boardValues[0][0];
+        }
+
+        if(
+            boardValues[0][2] &&
+            boardValues[0][2]=== boardValues[1][1] &&
+            boardValues[1][1]===boardValues[2][0]
+        ){
+            return boardValues[0][2];
+        }
+
+        return null;
+    }
+
+return{ getBoard, dropToken,printBoard,checkwin};
     
 }
 
@@ -47,15 +86,16 @@ function gameController(
     playerOneName="Player One",
     playerTwoName="Player Two"
 ){
+    let winner = null;
     const board=Gameboard();
 
     const player=[{
         name: playerOneName,
-        token:"O"
+        token:"O",
     },
     {
         name: playerTwoName,
-        token:"X"
+        token:"X",
     }];
 
     let activePlayer=player[0];
@@ -78,23 +118,26 @@ function gameController(
             return;
         }
 
+        const winnerToken=board.checkwin();
+        if(winnerToken){
+        winner=winnerToken;
+        console.log(`${getActivePlayer().name} wins!`);
+        return;
+    }
+
         switchPlayerTurn();
         printNewRound();
     }
 
-    const win=(board)=>{
-        for(let i=0;i<3;i++){
-            for(let j=0;j<3;j++){
-                if(board.dropToken(row,column,getActivePlayer().token)==)
-            }
-        }
-    }
+     const getWinner = () => winner;
+
 
     printNewRound();
 
     return {
     playRound,
     getActivePlayer,
+    getWinner,
     getBoard: board.getBoard
   }
 }
@@ -108,9 +151,15 @@ function screenController(){
         boardDiv.textContent="";
 
         const board=game.getBoard();
+        const win=game.getWinner();
         const activePlayer=game.getActivePlayer();
 
-        playerTurnDiv.textContent=`${activePlayer.name}'s Turn`;
+        if(win){
+            playerTurnDiv.textContent=`${activePlayer.name} wins!`;
+        }
+        else{
+            playerTurnDiv.textContent=`${activePlayer.name}'s Turn`;
+        }
 
         board.forEach((row,indexRow)=>{
             row.forEach((cell,indexColumn)=>{
@@ -130,6 +179,7 @@ function screenController(){
         const selectedColumn=e.target.dataset.cell;
         const selectedRow=e.target.dataset.row;
         if(!selectedColumn || !selectedRow) return;
+        if(game.getWinner()) return;
         game.playRound(selectedRow,selectedColumn);
         updateScreen();
     }
