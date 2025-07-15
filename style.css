@@ -30,3 +30,15 @@
 .turn{
     padding: 2rem;
 }
+
+input{
+    font-size: 1rem;
+}
+
+.start{
+    font-size: 1rem;
+}
+
+h1{
+    font-size: 4rem;
+}

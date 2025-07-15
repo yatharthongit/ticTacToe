@@ -63,7 +63,20 @@ function Gameboard(){
         return null;
     }
 
-return{ getBoard, dropToken,printBoard,checkwin};
+    const tie=()=>{
+        const boardWithCellValues=board.map(row=>row.map(cell=> cell.getValue()));
+
+       for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+            if(boardWithCellValues[i][j]===""){
+                return false;
+            }
+        }
+       }
+       return checkwin()===null;
+    }
+
+return{ getBoard, dropToken,printBoard,checkwin,tie};
     
 }
 
@@ -83,8 +96,8 @@ function Cell(){
 }
 
 function gameController(
-    playerOneName="Player One",
-    playerTwoName="Player Two"
+    playerOneName,
+    playerTwoName
 ){
     let winner = null;
     const board=Gameboard();
@@ -131,6 +144,8 @@ function gameController(
 
      const getWinner = () => winner;
 
+     const getTie=()=>board.tie();
+
 
     printNewRound();
 
@@ -138,14 +153,26 @@ function gameController(
     playRound,
     getActivePlayer,
     getWinner,
+    getTie,
     getBoard: board.getBoard
   }
 }
 
 function screenController(){
-    const game = gameController();
+    const p1=document.querySelector(".p1");
+    const p2=document.querySelector(".p2");
+    const start=document.querySelector(".start");
+    start.addEventListener("click",(e)=>{
+        e.preventDefault();
+        const pl1=p1.value;
+        const pl2=p2.value;
+        start.innerHTML="Restart";
+
+    const game = gameController(pl1,pl2);
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector('.board');
+
+    
 
     const updateScreen=()=>{
         boardDiv.textContent="";
@@ -153,9 +180,14 @@ function screenController(){
         const board=game.getBoard();
         const win=game.getWinner();
         const activePlayer=game.getActivePlayer();
+        const tie=game.getTie();
 
         if(win){
             playerTurnDiv.textContent=`${activePlayer.name} wins!`;
+        }
+        else if(tie){
+            playerTurnDiv.textContent=`It's a tie`;
+            console.log(`it's a tie`);
         }
         else{
             playerTurnDiv.textContent=`${activePlayer.name}'s Turn`;
@@ -173,7 +205,7 @@ function screenController(){
             })
         })
 
-    }
+    }  
 
     function click(e){
         const selectedColumn=e.target.dataset.cell;
@@ -186,6 +218,7 @@ function screenController(){
     
     boardDiv.addEventListener("click",click);
     updateScreen();
+    })
     
 }
 
